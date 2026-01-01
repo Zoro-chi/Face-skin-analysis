@@ -92,39 +92,61 @@ skin-analysis-ai/
 
 ## Installation
 
-### 1. Clone Repository
+### Option 1: Local Development (Mac/Linux/Windows)
+
+#### 1. Clone Repository
 
 ```bash
 git clone https://dagshub.com/<username>/skin-analysis-ai.git
 cd skin-analysis-ai
 ```
 
-### 2. Create Virtual Environment
+#### 2. Create Conda Environment
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+conda create -n face-analysis python=3.12
+conda activate face-analysis
 ```
 
-### 3. Install Dependencies
+#### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment
+#### 4. Configure Environment
 
 ```bash
 cp .env.example .env
-# Edit .env with your credentials
+# Edit .env with your DagsHub credentials
 ```
 
-### 5. Initialize DVC
+#### 5. Initialize DVC
 
 ```bash
 dvc init
 dvc remote add -d dagshub https://dagshub.com/<username>/skin-analysis-ai.dvc
 ```
+
+### Option 2: Google Colab (GPU Training)
+
+**Recommended for model training with GPU acceleration!**
+
+1. Open [notebooks/train_colab.ipynb](notebooks/train_colab.ipynb) in Google Colab
+2. Select GPU runtime (Runtime → Change runtime type → GPU)
+3. Follow notebook instructions
+
+📖 **Detailed Colab workflow:** See [docs/COLAB_WORKFLOW.md](docs/COLAB_WORKFLOW.md)
+
+### Hybrid Workflow (Recommended) 🌟
+
+```
+1. Preprocessing → Local (CPU)      ✅ Your Mac
+2. Training     → Colab (GPU)       🚀 Free GPU
+3. Evaluation   → Local (MLflow)    ✅ Your Mac
+```
+
+See [docs/COLAB_WORKFLOW.md](docs/COLAB_WORKFLOW.md) for complete guide.
 
 ## Usage
 

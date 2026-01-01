@@ -208,3 +208,9 @@ __marimo__/
 
 .dvc/
 .vscode/
+data/
+ROADMAP.md
+docs/
+
+face-skin-analysis.zip
+

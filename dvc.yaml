@@ -1,0 +1,63 @@
+# DVC Pipeline Configuration
+
+stages:
+  preprocess:
+    cmd: python preprocessing/run.py
+    deps:
+      - data/raw
+      - preprocessing/run.py
+      - preprocessing/face_detection.py
+      - preprocessing/augmentation.py
+    params:
+      - preprocessing
+    outs:
+      - data/processed
+      - data/augmented
+
+  train:
+    cmd: python training/train.py
+    deps:
+      - data/processed
+      - training/train.py
+      - models/efficientnet.py
+      - models/vit_model.py
+    params:
+      - training
+      - model
+    outs:
+      - outputs/checkpoints/best_model.pth
+
+  evaluate:
+    cmd: python evaluation/evaluate.py
+    deps:
+      - outputs/checkpoints/best_model.pth
+      - data/processed
+      - evaluation/evaluate.py
+      - evaluation/metrics.py
+    params:
+      - evaluation
+    metrics:
+      - outputs/metrics.json:
+          cache: false
+    plots:
+      - outputs/plots/confusion_matrix.png
+      - outputs/plots/roc_curve.png
+
+  explainability:
+    cmd: python explainability/gradcam.py
+    deps:
+      - outputs/checkpoints/best_model.pth
+      - data/processed
+      - explainability/gradcam.py
+    params:
+      - explainability
+    outs:
+      - outputs/explainability
+
+  export_onnx:
+    cmd: python onnx/export.py
+    deps:
+      - outputs/checkpoints/best_model.pth
+      - onnx/export.py
+    outs:
+      - onnx/skin_model.onnx
