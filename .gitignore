@@ -215,3 +215,5 @@ docs/
 face-skin-analysis.zip
 outputs/
 
+configs/config.yaml
+notebooks/colab_train.ipynb

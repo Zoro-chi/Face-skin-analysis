@@ -168,7 +168,7 @@ def create_gradio_interface():
     with gr.Blocks(title="Face Skin Condition Analysis") as demo:
         gr.Markdown(
             """
-            # 🔬 Face Skin Condition Analysis
+            # Face Skin Condition Analysis
             Upload a face image to detect **acne**, **pigmentation**, and **wrinkles**.
             
             The model uses optimized thresholds for each condition and provides confidence scores.

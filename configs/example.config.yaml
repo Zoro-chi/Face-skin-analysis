@@ -1,0 +1,90 @@
+# Example config for dummy data (for quick local experiments)
+# Keeps values small so tests and CI run quickly.
+project:
+  name: "Face Skin Analysis - Example (Dummy)"
+  description: "Minimal config for running with small dummy dataset"
+  version: "0.0.1"
+
+environment:
+  auto_detect: true
+  local:
+    base_dir: "."
+
+data:
+  raw_dir: "data/raw/dummy"
+  processed_dir: "data/processed/dummy"
+  augmented_dir: "data/augmented/dummy"
+
+  datasets:
+    - dummy_faces
+    - dummy_skin_defects
+
+  # Keep tiny for local/dev runs
+  max_images_per_dataset: 50
+
+  # No special skipping by default for dummy data
+  skip_face_detection: []
+
+  split_ratios:
+    train: 0.8
+    val: 0.1
+    test: 0.1
+
+  random_seed: 42
+
+preprocessing:
+  face_detector: "opencv"
+  image_size: 64
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+  clahe:
+    enabled: false
+
+  augmentation:
+    horizontal_flip: 0.5
+    rotation: 10
+    brightness: 0.1
+    contrast: 0.1
+    saturation: 0.05
+    hue: 0.02
+
+model:
+  architecture: "resnet18"
+  pretrained: false
+  conditions:
+    - acne
+    - redness
+    - pigmentation
+  num_classes: 3
+  dropout_rate: 0.0
+
+training:
+  batch_size: 8
+  num_epochs: 5
+  learning_rate: 0.001
+  weight_decay: 0.0
+  loss: "bce"
+  class_weights: [1.0, 1.0, 1.0]
+  optimizer: "adam"
+
+evaluation:
+  metrics:
+    - precision
+    - recall
+    - f1_score
+  confidence_threshold: 0.5
+
+explainability:
+  gradcam:
+    target_layer: "layer4"
+    colormap: "jet"
+    alpha: 0.4
+  save_heatmaps: false
+
+inference:
+  use_mc_dropout: false
+  temperature_scaling: false
+
+logging:
+  level: "DEBUG"
+  save_logs: false
