@@ -232,6 +232,11 @@ def main():
             medium = set(map(str, tone_map.get("medium", [])))
             dark = set(map(str, tone_map.get("dark", [])))
 
+            logger.info(
+                f"Tone mapping - Light: {light}, Medium: {medium}, Dark: {dark}"
+            )
+            logger.info(f"Raw tone sample (first 10): {raw_tones[:10]}")
+
             def to_group(x: str) -> str:
                 x_clean = x.strip()
                 if x_clean in light:
@@ -243,6 +248,11 @@ def main():
                 return "unknown"
 
             skin_tones = np.array([to_group(x) for x in raw_tones])
+
+            logger.info(f"Mapped groups (first 10): {skin_tones[:10]}")
+            logger.info(
+                f"Group distribution: {np.unique(skin_tones, return_counts=True)}"
+            )
 
             # Filter out unknowns for fairness metrics
             known_mask = skin_tones != "unknown"
@@ -264,13 +274,8 @@ def main():
                 )
         else:
             logger.info("Split CSV not found; skipping bias analysis.")
-
-        skin_tone_groups = ["light", "medium", "dark"]
-        bias_analyzer = BiasAnalyzer(
-            condition_names, skin_tone_groups, output_dir="outputs/bias_analysis"
-        )
-
-        bias_analyzer.analyze(predictions, targets, skin_tones, threshold)
+    else:
+        logger.info("Bias analysis disabled in config (stratify_by_skin_tone=false)")
 
     logger.info("\nEvaluation complete!")
 

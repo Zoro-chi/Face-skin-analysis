@@ -192,8 +192,8 @@ class FairnessMetrics:
         group_metrics = {}
 
         for group in self.skin_tone_groups:
-            # Get samples for this group
-            mask = skin_tones == group
+            # Get samples for this group - convert to string for robust comparison
+            mask = skin_tones.astype(str) == str(group)
 
             if mask.sum() == 0:
                 continue
@@ -201,31 +201,42 @@ class FairnessMetrics:
             group_pred = pred_binary[mask]
             group_target = targets[mask]
 
-            # Calculate per-condition metrics and average
-            # Use samples averaging for multi-label classification
-            # This averages across samples first, then across conditions
-            try:
-                # For multi-label, use 'samples' averaging which is more appropriate
-                precision = precision_score(
-                    group_target, group_pred, average="samples", zero_division=0
+            # Debug logging
+            print(f"\n[DEBUG] Group: {group}")
+            print(f"  Mask sum: {mask.sum()}")
+            print(
+                f"  Pred shape: {group_pred.shape}, Target shape: {group_target.shape}"
+            )
+            print(f"  Pred sum per condition: {group_pred.sum(axis=0)}")
+            print(f"  Target sum per condition: {group_target.sum(axis=0)}")
+            print(
+                f"  Samples with any positive pred: {(group_pred.sum(axis=1) > 0).sum()}"
+            )
+            print(
+                f"  Samples with any positive target: {(group_target.sum(axis=1) > 0).sum()}"
+            )
+
+            # Calculate metrics per condition, then average
+            # This is more robust than 'samples' averaging for sparse multi-label
+            precisions = []
+            recalls = []
+            f1s = []
+
+            for i, condition in enumerate(self.condition_names):
+                p = precision_score(
+                    group_target[:, i], group_pred[:, i], zero_division=0
                 )
-                recall = recall_score(
-                    group_target, group_pred, average="samples", zero_division=0
-                )
-                f1 = f1_score(
-                    group_target, group_pred, average="samples", zero_division=0
-                )
-            except ValueError:
-                # Fallback to weighted if samples fails (e.g., all zeros)
-                precision = precision_score(
-                    group_target, group_pred, average="weighted", zero_division=0
-                )
-                recall = recall_score(
-                    group_target, group_pred, average="weighted", zero_division=0
-                )
-                f1 = f1_score(
-                    group_target, group_pred, average="weighted", zero_division=0
-                )
+                r = recall_score(group_target[:, i], group_pred[:, i], zero_division=0)
+                f = f1_score(group_target[:, i], group_pred[:, i], zero_division=0)
+                precisions.append(p)
+                recalls.append(r)
+                f1s.append(f)
+                print(f"  {condition}: P={p:.4f}, R={r:.4f}, F1={f:.4f}")
+
+            # Average across conditions (macro average)
+            precision = np.mean(precisions)
+            recall = np.mean(recalls)
+            f1 = np.mean(f1s)
 
             group_metrics[group] = {
                 "precision": precision,

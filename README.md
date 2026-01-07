@@ -6,6 +6,7 @@
 [![DVC](https://img.shields.io/badge/DVC-data%20versioning-orange)](https://dvc.org)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-green)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red)](https://pytorch.org/)
+[![GitHub](https://img.shields.io/badge/GitHub-Zoro--chi/Face--skin--analysis-black?logo=github)](https://github.com/Zoro-chi/Face-skin-analysis)
 
 ## Overview
 
@@ -22,6 +23,30 @@ This project implements a **computer vision system** that detects facial skin co
 - ✅ Dataset & model versioning with DVC
 - ✅ Centralized collaboration via DagsHub
 - ✅ ONNX-optimized inference pipeline
+
+## Current Results (v1.0)
+
+Latest model metrics (from `outputs/metrics.json`):
+
+- **Overall** — Precision: 0.751, Recall: 0.889, F1: 0.811, AUROC: 0.986
+- **Acne** — Precision: 0.545, Recall: 0.750, F1: 0.632, AUROC: 0.976
+- **Pigmentation** — Precision: 0.908, Recall: 0.917, F1: 0.912, AUROC: 0.982
+- **Wrinkles** — Precision: 0.800, Recall: 1.000, F1: 0.889, AUROC: 0.9998
+
+Fairness highlights (evaluation stratified by Fitzpatrick groups):
+
+- **Dark skin (Fitzpatrick V–VI):** F1 = 0.48 (current)
+- **Medium skin (III–IV):** F1 = 0.75 (current)
+- **Fairness gap:** 0.26 (target: reduce to <0.15)
+
+Key mitigation steps applied:
+
+- Balanced sampling using `WeightedRandomSampler` to boost exposure for underrepresented skin-tone groups.
+- Per-group threshold optimization on validation sets to maximize F1 per Fitzpatrick group.
+- Tone-preserving augmentations (CLAHE, geometric transforms) to avoid distorting skin color information.
+- Experiment tracking with MLflow and dataset/version control with DVC for reproducibility.
+
+For detailed analysis and reproducible steps see `docs/FAIRNESS_IMPROVEMENTS.md` and `blog_post.md`.
 
 ## System Architecture
 
@@ -249,10 +274,10 @@ mlflow ui
 
 | Metric    | Overall | Light Skin | Medium Skin | Dark Skin |
 | --------- | ------- | ---------- | ----------- | --------- |
-| Precision | TBD     | TBD        | TBD         | TBD       |
-| Recall    | TBD     | TBD        | TBD         | TBD       |
-| F1-Score  | TBD     | TBD        | TBD         | TBD       |
-| AUROC     | TBD     | TBD        | TBD         | TBD       |
+| Precision | 0.751   | 0.54       | 0.83        | 0.50      |
+| Recall    | 0.889   | 0.57       | 0.74        | 0.47      |
+| F1-Score  | 0.811   | 0.5525     | 0.7479      | 0.4843    |
+| AUROC     | 0.986   | TBD        | TBD         | TBD       |
 
 ## Ethical Considerations
 
@@ -271,40 +296,3 @@ mlflow ui
 - [ ] Additional skin conditions
 - [ ] Multi-language support
 - [ ] API deployment with FastAPI
-
-## Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Citation
-
-If you use this project in your research, please cite:
-
-```bibtex
-@software{skin_analysis_ai,
-  title={Face & Skin Condition Analysis System},
-  author={Your Name},
-  year={2025},
-  url={https://github.com/yourusername/skin-analysis-ai}
-}
-```
-
-## Contact
-
-For questions or collaborations, reach out:
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-
----
-
-**Built with ❤️ for fair and explainable AI in dermatology**

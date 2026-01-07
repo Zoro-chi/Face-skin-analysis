@@ -34,10 +34,11 @@ onnx>=1.14.0
 onnxruntime>=1.15.0
 # onnx-simplifier>=0.4.0  # Optional - has build issues, install separately if needed
 
-# API (optional)
+# API & UI
 fastapi>=0.100.0
 uvicorn>=0.23.0
 python-multipart>=0.0.6
+gradio>=4.0.0
 
 # Utilities
 tqdm>=4.65.0

@@ -25,8 +25,8 @@ data:
 
   # Dataset sources
   datasets:
-    - fitzpatrick17k # Priority: has skin tone labels (critical for fairness)
-    - acne04 # Priority: acne-specific dataset
+    # - fitzpatrick17k # REMOVED: Has skin tone labels but NO condition labels
+    # - acne04 # REMOVED: Not needed for current scope
     - kaggle_face_skin_diseases # Amellia: face-focused (Acne, Rosacea, etc.)
     - kaggle_skin_defects # TrainingDataPro: acne, redness, eye-bags
     - kaggle_skin_diseases # IsmailPromus: lesion classes (pigmentation proxy)
@@ -45,10 +45,11 @@ data:
     - kaggle_skin_diseases # Lesion-centric dataset; face detection not applicable
 
   # Skin tone grouping (Fitzpatrick Scale)
-  skin_tones:
-    light: [1, 2]
-    medium: [3, 4]
-    dark: [5, 6]
+  # DISABLED: Fitzpatrick17k removed - no skin tone labels available
+  # skin_tones:
+  #   light: [1, 2]
+  #   medium: [3, 4]
+  #   dark: [5, 6]
 
   # Train/Val/Test split
   split_ratios:
@@ -116,7 +117,8 @@ training:
   class_weights: [0.45, 0.02, 2.53]
 
   # Fairness: Balance skin tone distribution in training batches
-  balance_skin_tones: true # Use WeightedRandomSampler to oversample underrepresented groups
+  # DISABLED: No skin tone labels available (Fitzpatrick17k removed)
+  balance_skin_tones: false
 
   # Optimizer
   optimizer: "adam"
@@ -141,7 +143,7 @@ evaluation:
     - auroc
 
   # Stratified evaluation
-  stratify_by_skin_tone: true
+  stratify_by_skin_tone: false # DISABLED: No skin tone labels available
 
   # Confidence threshold
   confidence_threshold: 0.5
@@ -150,7 +152,7 @@ evaluation:
   optimize_thresholds: true
 
   # Per-group (skin tone) threshold optimization for fairness
-  optimize_per_group_thresholds: true # Optimize thresholds separately for each skin tone
+  optimize_per_group_thresholds: false # DISABLED: No skin tone labels available
 
   # Bias metrics
   fairness_metrics:
